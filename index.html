@@ -99,6 +99,13 @@ header{position:sticky;top:0;z-index:30;background:rgba(255,255,255,.92);
 .tg-function{background:#e7f6f3;color:#0c7a6c}
 .tg-value_types{background:#fdf0e4;color:#b45309}
 .tg-src{background:#f2f4f7;color:#667085}
+/* 侧栏维度标题右侧的合计提示（说明该维度合计＝案例总数） */
+.side h4 .h4n{margin-left:7px;font-weight:500;color:var(--ink3);letter-spacing:0;font-size:11.5px}
+/* 详情页「相关标签」：按维度分组展示（承接侧栏移除的职能/价值类型/来源类型） */
+.reltags{display:flex;flex-direction:column;gap:9px}
+.tagrow{display:flex;align-items:flex-start;gap:10px}
+.tagrow .tglab{flex:none;width:4.8em;font-size:12.5px;color:var(--ink3);padding-top:3px}
+.tagrow .tgwrap{display:flex;flex-wrap:wrap;gap:5px}
 
 /* 新增/日期徽标 */
 .cardtop{display:flex;align-items:flex-start;justify-content:space-between;gap:8px}
@@ -303,6 +310,9 @@ const DATA = [{"no":"NO.01","num":1,"title":"从师徒带教到AI辅助培训：
 const META = {"industry":{"制造与供应链":14,"政务与公共服务":7,"专业服务":3,"跨境电商与外贸":4,"金融":9,"科研与技术服务":3,"零售与消费品牌":12,"通信与基础设施":2,"生物医药":2,"建筑与工程":3,"媒体与出版":5,"医疗健康":10,"能源与公用事业":5,"体育与户外":3,"农业":1,"生活服务":6,"教育与培训":5},"function":{"生产与供应链":13,"公共服务流程":5,"法务与合规":2,"内容与设计":8,"销售与市场":11,"研发与产品":14,"财务":5,"知识与办公效率":11,"运营与经营管理":18,"数据与 IT":7},"value_types":{"降本增效":79,"辅助决策":6,"营收增长":4,"风险合规":5},"srcType":{"行业报告":25,"厂商官方案例":56,"新闻官媒":13}};
 const LABELS = {"industry":"行业","function":"职能","value_types":"价值类型","srcType":"来源类型"};
 const ORDER = ['industry','function','value_types','srcType'];
+const SIDE_DIM = 'industry';  // 侧栏只展示一个主维度（其余维度在详情页「相关标签」按维度分组展示）
+const TGCLS = {industry:'industry', function:'function', value_types:'value_types', srcType:'src'};
+const DIMNAME = {industry:'行业', function:'职能', value_types:'价值类型', srcType:'来源类型'};
 const UPDATE_DATE = '2026-10-03';
 function fmtDate(d){const p=d.split('-');return p[0]+'.'+p[1];}
 
@@ -350,14 +360,13 @@ function renderSrc(){
 
 function sideHtml(){
   let h = '';
-  ORDER.forEach(k=>{
-    const items = Object.entries(META[k]).sort((a,b)=> b[1]-a[1] || a[0].localeCompare(b[0],'zh'));
-    h += '<h4>'+LABELS[k]+'</h4>';
-    items.forEach(([v,n])=>{
-      const on = state.f[k].includes(v) ? ' on' : '';
-      h += '<label class="opt'+on+'" data-k="'+k+'" data-v="'+v+'"><span class="box"></span>'
-         + '<span>'+v+'</span><span class="n">'+n+'</span></label>';
-    });
+  const k = SIDE_DIM;
+  const items = Object.entries(META[k]).sort((a,b)=> b[1]-a[1] || a[0].localeCompare(b[0],'zh'));
+  h += '<h4>'+LABELS[k]+'<span class="h4n">共 '+DATA.length+' 篇</span></h4>';
+  items.forEach(([v,n])=>{
+    const on = state.f[k].includes(v) ? ' on' : '';
+    h += '<label class="opt'+on+'" data-k="'+k+'" data-v="'+v+'"><span class="box"></span>'
+       + '<span>'+v+'</span><span class="n">'+n+'</span></label>';
   });
   h += '<h4>最新</h4>'
     + '<label class="opt'+(state.onlyNew?' on':'')+'" id="onlyNew"><span class="box"></span>'
@@ -385,10 +394,16 @@ function tagsHtml(c){
 function valueHtml(c){
   return c.tags.value_types.map(v=>'<span class="tg tg-value_types">'+v+'</span>').join('');
 }
-function altHtml(c){
+function dimTags(c,k){
+  const arr = [].concat(c.tags[k]||[], c.tags[k+'_alt']||[]);
+  return arr.map(v=>'<span class="tg tg-'+TGCLS[k]+'">'+v+'</span>').join('');
+}
+function relHtml(c){
   let h = '';
-  ['industry','function','value_types'].forEach(k=>{
-    (c.tags[k+'_alt']||[]).forEach(v=> h += '<span class="tg tg-'+k+'">'+v+'</span>');
+  ORDER.forEach(k=>{
+    const inner = dimTags(c,k);
+    if(inner) h += '<div class="tagrow"><span class="tglab">'+DIMNAME[k]+'</span>'
+                  + '<span class="tgwrap">'+inner+'</span></div>';
   });
   return h;
 }
@@ -431,7 +446,6 @@ function secHtml(title, blocks){
 function renderDetail(no){
   const c = DATA.find(x=>x.no===no);
   if(!c) return;
-  const vals = c.tags.value_types.map(v=>'<span class="tg tg-value_types">'+v+'</span>').join('');
   let h = '<div class="detail">'
     + '<span class="back" id="back">← 返回列表</span>'
     + '<div class="pair big">'+c.pair+'</div>'
@@ -439,9 +453,9 @@ function renderDetail(no){
     + '<div class="dhead">'
       + (c.isNew?'<span class="bd bd-new">新</span>':'')
       + (c.date?'<span class="bd bd-date">'+fmtDate(c.date)+'</span>':'')
-      + tagsHtml(c)+vals+'</div>'
+      + '</div>'
 
-    + (altHtml(c) ? '<section class="sec"><h2>相关标签</h2><div class="row">'+altHtml(c)+'</div></section>' : '')
+    + '<section class="sec"><h2>相关标签</h2><div class="reltags">'+relHtml(c)+'</div></section>'
 
     + '<section class="sec"><h2>案例简介</h2><div class="summary">'
       + c.summary.map(p=>'<p>'+p+'</p>').join('') + '</div></section>'
