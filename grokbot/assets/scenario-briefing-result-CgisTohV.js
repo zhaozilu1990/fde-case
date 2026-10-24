@@ -1,0 +1,1 @@
+var e=`/grokbot/tutorial/scenario-briefing-result.png`;export{e as t};

@@ -1,0 +1,1 @@
+var e=`/grokbot/tutorial/flow-routine-testrun.jpg`;export{e as t};

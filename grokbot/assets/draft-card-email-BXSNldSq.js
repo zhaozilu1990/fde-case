@@ -1,0 +1,1 @@
+var e=`/grokbot/tutorial/draft-card-email.png`;export{e as t};

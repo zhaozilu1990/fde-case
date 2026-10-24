@@ -1,0 +1,1 @@
+var e=`/grokbot/tutorial/flow-narrow-bot.jpg`;export{e as t};

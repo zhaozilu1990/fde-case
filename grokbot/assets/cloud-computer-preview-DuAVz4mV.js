@@ -1,0 +1,1 @@
+var e=`/grokbot/tutorial/cloud-computer-preview.png`;export{e as t};

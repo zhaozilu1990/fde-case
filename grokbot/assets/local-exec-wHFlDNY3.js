@@ -1,0 +1,1 @@
+var e=`/grokbot/tutorial/local-exec.png`;export{e as t};

@@ -1,0 +1,1 @@
+var e=`/grokbot/tutorial/flow-approval-gate.jpg`;export{e as t};

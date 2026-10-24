@@ -1,0 +1,1 @@
+var e=`/grokbot/tutorial/skills-panel.png`;export{e as t};

@@ -1,0 +1,1 @@
+var e=`/grokbot/tutorial/auto-review-rules.png`;export{e as t};

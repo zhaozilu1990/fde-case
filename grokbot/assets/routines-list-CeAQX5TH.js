@@ -1,0 +1,1 @@
+var e=`/grokbot/mobile/routines-list.webp`;export{e as t};

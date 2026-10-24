@@ -1,0 +1,1 @@
+var e=`/grokbot/settings/computer-tab.png`;export{e as t};

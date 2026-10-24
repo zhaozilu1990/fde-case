@@ -1,0 +1,3 @@
+Sitemap: https://grokbotguide.pages.dev/grokbot/sitemap.xml
+User-agent:*
+Disallow:
